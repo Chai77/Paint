@@ -46,7 +46,9 @@ document.body.addEventListener(
 document.body.addEventListener(
     "touchmove",
     function(e) {
+        console.log("Hello world");
         if (e.target.nodeName == "CANVAS") {
+            console.log("Hello World Canvas");
             e.preventDefault();
         }
     },
