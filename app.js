@@ -204,7 +204,7 @@ canvas1.addEventListener("touchstart", (e) => {
     //console.log("onmousedown", e);
     e.preventDefault();
 
-    const mouse = convertToCanvasMouse(e);
+    const mouse = convertToCanvasTouch(e);
 
     mousePressed = true;
     if (mode === "draw") {
@@ -250,7 +250,6 @@ function pan(mouse) {
     offsetX -= mouse.x - selectX;
     offsetY -= mouse.y - selectY;
     redraw();
-    console.log(offsetX, offsetY);
 
     selectX = mouse.x;
     selectY = mouse.y;
