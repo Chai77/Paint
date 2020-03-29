@@ -150,6 +150,7 @@ canvas1.addEventListener("mousedown", (e) => {
 });
 
 canvas1.addEventListener("touchmove", (e) => {
+    console.log("Hello World");
     e.preventDefault();
     //console.log("onmousemove", e);
 
