@@ -46,9 +46,7 @@ document.body.addEventListener(
 document.body.addEventListener(
     "touchmove",
     function(e) {
-        console.log("Hello world");
         if (e.target.nodeName == "CANVAS") {
-            console.log("Hello World Canvas");
             e.preventDefault();
         }
     },
@@ -156,7 +154,6 @@ canvas1.addEventListener("mouseup", (e) => {
 
 canvas1.addEventListener("mousedown", (e) => {
     //console.log("onmousedown", e);
-    console.log(e.which);
 
     const mouse = convertToCanvasMouse(e);
 
@@ -180,12 +177,10 @@ canvas1.addEventListener("mousedown", (e) => {
 });
 
 canvas1.addEventListener("touchmove", (e) => {
-    console.log("Hello World");
     e.preventDefault();
     //console.log("onmousemove", e);
 
     const mouse = convertToCanvasTouch(e);
-    console.log("touchmove", e);
 
     if (mousePressed) {
         if (mode === "draw") {
@@ -255,6 +250,7 @@ function pan(mouse) {
     offsetX -= mouse.x - selectX;
     offsetY -= mouse.y - selectY;
     redraw();
+    console.log(offsetX, offsetY);
 
     selectX = mouse.x;
     selectY = mouse.y;
