@@ -143,6 +143,7 @@ canvas1.addEventListener("mousedown", (e) => {
 });
 
 canvas1.addEventListener("touchmove", (e) => {
+    e.preventDefault();
     //console.log("onmousemove", e);
 
     const mouse = convertToCanvasMouse(canvas1, e);
@@ -160,6 +161,7 @@ canvas1.addEventListener("touchmove", (e) => {
 });
 
 canvas1.addEventListener("touchend", (e) => {
+    e.preventDefault();
     //console.log("onmouseup", e);
     mousePressed = false;
 });
@@ -167,6 +169,8 @@ canvas1.addEventListener("touchend", (e) => {
 canvas1.addEventListener("touchstart", (e) => {
     //console.log("onmousedown", e);
     console.log(e.which);
+
+    e.preventDefault();
 
     const mouse = convertToCanvasMouse(canvas1, e);
 
