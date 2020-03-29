@@ -181,22 +181,20 @@ canvas1.addEventListener("touchstart", (e) => {
 
     const mouse = convertToCanvasMouse(e);
 
-    if (e.which == 1) {
-        mousePressed = true;
-        if (mode === "draw") {
-            drawing.push({
-                color: "#000000",
-                width: 3,
-                pos: 0,
-                positionX: [toWorldSpaceX(mouse.x)],
-                positionY: [toWorldSpaceY(mouse.y)]
-            });
-            pos++;
-            drawLine(drawing[pos]);
-        } else if (mode === "select") {
-            selectX = mouse.x;
-            selectY = mouse.y;
-        }
+    mousePressed = true;
+    if (mode === "draw") {
+        drawing.push({
+            color: "#000000",
+            width: 3,
+            pos: 0,
+            positionX: [toWorldSpaceX(mouse.x)],
+            positionY: [toWorldSpaceY(mouse.y)]
+        });
+        pos++;
+        drawLine(drawing[pos]);
+    } else if (mode === "select") {
+        selectX = mouse.x;
+        selectY = mouse.y;
     }
 });
 /*
