@@ -69,10 +69,17 @@ function updateModeLabel(mode) {
 
 const rect = canvas1.getBoundingClientRect();
 
-function convertToCanvasMouse(canvas, e) {
+function convertToCanvasMouse(e) {
     return {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top
+    };
+}
+
+function convertToCanvasTouch(e) {
+    return {
+        x: e.touches[0].clientX - rect.left,
+        y: e.touches[0].clientY - rect.top
     };
 }
 
@@ -82,7 +89,7 @@ let selectY = 0;
 canvas1.addEventListener("wheel", (e) => {
     //console.log(e.deltaY);
 
-    const mouse = convertToCanvasMouse(canvas1, e);
+    const mouse = convertToCanvasMouse(e);
 
     //Zoom in at mousePosition, if e.deltaY == 3 and zoom out if e.deltaY == -3
 
@@ -98,7 +105,7 @@ canvas1.addEventListener("wheel", (e) => {
 canvas1.addEventListener("mousemove", (e) => {
     //console.log("onmousemove", e);
 
-    const mouse = convertToCanvasMouse(canvas1, e);
+    const mouse = convertToCanvasMouse(e);
 
     if (mousePressed) {
         if (mode === "draw") {
@@ -121,7 +128,7 @@ canvas1.addEventListener("mousedown", (e) => {
     //console.log("onmousedown", e);
     console.log(e.which);
 
-    const mouse = convertToCanvasMouse(canvas1, e);
+    const mouse = convertToCanvasMouse(e);
 
     if (e.which == 1) {
         mousePressed = true;
@@ -146,7 +153,7 @@ canvas1.addEventListener("touchmove", (e) => {
     e.preventDefault();
     //console.log("onmousemove", e);
 
-    const mouse = convertToCanvasMouse(canvas1, e);
+    const mouse = convertToCanvasTouch(e);
 
     if (mousePressed) {
         if (mode === "draw") {
@@ -172,7 +179,7 @@ canvas1.addEventListener("touchstart", (e) => {
 
     e.preventDefault();
 
-    const mouse = convertToCanvasMouse(canvas1, e);
+    const mouse = convertToCanvasMouse(e);
 
     if (e.which == 1) {
         mousePressed = true;
