@@ -141,6 +141,53 @@ canvas1.addEventListener("mousedown", (e) => {
         }
     }
 });
+
+canvas1.addEventListener("touchmove", (e) => {
+    //console.log("onmousemove", e);
+
+    const mouse = convertToCanvasMouse(canvas1, e);
+
+    if (mousePressed) {
+        if (mode === "draw") {
+            drawing[pos].positionX.push(toWorldSpaceX(mouse.x));
+            drawing[pos].positionY.push(toWorldSpaceY(mouse.y));
+            drawing[pos].pos++;
+            drawLine(drawing[pos]);
+        } else if (mode == "select") {
+            pan(mouse);
+        }
+    }
+});
+
+canvas1.addEventListener("touchend", (e) => {
+    //console.log("onmouseup", e);
+    mousePressed = false;
+});
+
+canvas1.addEventListener("touchstart", (e) => {
+    //console.log("onmousedown", e);
+    console.log(e.which);
+
+    const mouse = convertToCanvasMouse(canvas1, e);
+
+    if (e.which == 1) {
+        mousePressed = true;
+        if (mode === "draw") {
+            drawing.push({
+                color: "#000000",
+                width: 3,
+                pos: 0,
+                positionX: [toWorldSpaceX(mouse.x)],
+                positionY: [toWorldSpaceY(mouse.y)]
+            });
+            pos++;
+            drawLine(drawing[pos]);
+        } else if (mode === "select") {
+            selectX = mouse.x;
+            selectY = mouse.y;
+        }
+    }
+});
 /*
 if(currPosX > offsetX && currPosX < offsetX + canvas1.width / scaleX)
 */
