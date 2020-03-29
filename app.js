@@ -154,6 +154,7 @@ canvas1.addEventListener("touchmove", (e) => {
     //console.log("onmousemove", e);
 
     const mouse = convertToCanvasTouch(e);
+    console.log("touchmove", e);
 
     if (mousePressed) {
         if (mode === "draw") {
@@ -175,8 +176,6 @@ canvas1.addEventListener("touchend", (e) => {
 
 canvas1.addEventListener("touchstart", (e) => {
     //console.log("onmousedown", e);
-    console.log(e.which);
-
     e.preventDefault();
 
     const mouse = convertToCanvasMouse(e);
