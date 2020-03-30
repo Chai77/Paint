@@ -1,6 +1,10 @@
 canvas1 = document.getElementById("main");
 const ctx1 = canvas1.getContext("2d");
 
+let hammer = new Hammer(canvas1);
+
+hammer.get("pinch").set({ enable: true });
+
 canvas2 = document.createElement("canvas");
 const ctx2 = canvas2.getContext("2d");
 
@@ -164,16 +168,16 @@ canvas1.addEventListener("touchmove", (e) => {
     //console.log("onmousemove", e);
 
     const mouse = convertToCanvasTouch(e);
-    console.log(mouse);
-
-    if (mousePressed) {
-        if (mode === "draw") {
-            drawing[pos].positionX.push(toWorldSpaceX(mouse.x));
-            drawing[pos].positionY.push(toWorldSpaceY(mouse.y));
-            drawing[pos].pos++;
-            drawLine(drawing[pos]);
-        } else if (mode == "select") {
-            pan(mouse);
+    if (e.touches.length == 1) {
+        if (mousePressed) {
+            if (mode === "draw") {
+                drawing[pos].positionX.push(toWorldSpaceX(mouse.x));
+                drawing[pos].positionY.push(toWorldSpaceY(mouse.y));
+                drawing[pos].pos++;
+                drawLine(drawing[pos]);
+            } else if (mode == "select") {
+                pan(mouse);
+            }
         }
     }
 });
@@ -189,25 +193,50 @@ canvas1.addEventListener("touchstart", (e) => {
     e.preventDefault();
 
     const mouse = convertToCanvasTouch(e);
-
-    mousePressed = true;
-    if (mode === "draw") {
-        drawing.push({
-            color: "#000000",
-            width: 3,
-            pos: 0,
-            positionX: [toWorldSpaceX(mouse.x)],
-            positionY: [toWorldSpaceY(mouse.y)],
-            ofZoomX: offsetZoomX,
-            ofZoomY: offsetZoomY
-        });
-        pos++;
-        drawLine(drawing[pos]);
-    } else if (mode === "select") {
-        selectX = mouse.x;
-        selectY = mouse.y;
+    if (e.touches.length == 1) {
+        mousePressed = true;
+        if (mode === "draw") {
+            drawing.push({
+                color: "#000000",
+                width: 3,
+                pos: 0,
+                positionX: [toWorldSpaceX(mouse.x)],
+                positionY: [toWorldSpaceY(mouse.y)],
+                ofZoomX: offsetZoomX,
+                ofZoomY: offsetZoomY
+            });
+            pos++;
+            drawLine(drawing[pos]);
+        } else if (mode === "select") {
+            selectX = mouse.x;
+            selectY = mouse.y;
+        }
     }
 });
+
+let pinchins = 0;
+let pinchouts = 0;
+
+hammer.on("pinchin", function(e) {
+    //zoom out
+    pinchins++;
+    if (pinchins % 2 === 0) {
+        zoomOut(e.center);
+    }
+});
+
+hammer.on("pinchout", function(e) {
+    //zoom in
+    pinchouts++;
+    if (pinchouts % 2 === 0) {
+        zoomIn(e.center);
+    }
+});
+
+hammer.on("pan", function(e) {
+    console.log(e);
+});
+
 /*
 if(currPosX > offsetX && currPosX < offsetX + canvas1.width / scaleX)
 */
