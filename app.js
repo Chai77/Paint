@@ -4,17 +4,26 @@ const ctx1 = canvas1.getContext("2d");
 canvas2 = document.createElement("canvas");
 const ctx2 = canvas2.getContext("2d");
 
+const limitZoomIn = 3;
+const limitZoomOut = 1;
+
 let positionX = 0;
 let positionY = 0;
 
 let offsetX = 0;
 let offsetY = 0;
 
-let scaleX = 1;
-let scaleY = 1; //Should be the exact same
-//scaleX === scaleY
+let offsetZoomX = 0;
+let offsetZoomY = 0;
 
-const deltaScale = 1.001;
+let deltaScale = 1.01;
+let deltaScaleReverse = 1 / 1.01;
+
+let scaleX = 1.0;
+let scaleY = 1.0;
+
+//Should be the exact same
+//scaleX === scaleY
 
 //mouseEvent.offsetX and mouseEvent.offsetY
 //mouse.which
@@ -24,34 +33,6 @@ onmousemove
 onmouseup
 onmousedown
 */
-
-document.body.addEventListener(
-    "touchstart",
-    function(e) {
-        if (e.target.nodeName == "CANVAS") {
-            e.preventDefault();
-        }
-    },
-    false
-);
-document.body.addEventListener(
-    "touchend",
-    function(e) {
-        if (e.target.nodeName == "CANVAS") {
-            e.preventDefault();
-        }
-    },
-    false
-);
-document.body.addEventListener(
-    "touchmove",
-    function(e) {
-        if (e.target.nodeName == "CANVAS") {
-            e.preventDefault();
-        }
-    },
-    false
-);
 
 let mousePressed = false;
 
@@ -165,7 +146,9 @@ canvas1.addEventListener("mousedown", (e) => {
                 width: 3,
                 pos: 0,
                 positionX: [toWorldSpaceX(mouse.x)],
-                positionY: [toWorldSpaceY(mouse.y)]
+                positionY: [toWorldSpaceY(mouse.y)],
+                ofZoomX: offsetZoomX,
+                ofZoomY: offsetZoomY
             });
             pos++;
             drawLine(drawing[pos]);
@@ -181,6 +164,7 @@ canvas1.addEventListener("touchmove", (e) => {
     //console.log("onmousemove", e);
 
     const mouse = convertToCanvasTouch(e);
+    console.log(mouse);
 
     if (mousePressed) {
         if (mode === "draw") {
@@ -213,7 +197,9 @@ canvas1.addEventListener("touchstart", (e) => {
             width: 3,
             pos: 0,
             positionX: [toWorldSpaceX(mouse.x)],
-            positionY: [toWorldSpaceY(mouse.y)]
+            positionY: [toWorldSpaceY(mouse.y)],
+            ofZoomX: offsetZoomX,
+            ofZoomY: offsetZoomY
         });
         pos++;
         drawLine(drawing[pos]);
@@ -226,24 +212,48 @@ canvas1.addEventListener("touchstart", (e) => {
 if(currPosX > offsetX && currPosX < offsetX + canvas1.width / scaleX)
 */
 function toWorldSpaceX(positionX) {
-    return positionX + offsetX;
+    return positionX / scaleX + offsetX;
 }
 
 function toWorldSpaceY(positionY) {
-    return positionY + offsetY;
+    return positionY / scaleY + offsetY;
 }
 
-function toScreenSpaceX(positionX) {
-    return positionX - offsetX;
+function toScreenSpaceX(positionX, object) {
+    return positionX - offsetX + offsetZoomX - object.ofZoomX;
 }
 
-function toScreenSpaceY(positionY) {
-    return positionY - offsetY;
+function toScreenSpaceY(positionY, object) {
+    return positionY - offsetY + offsetZoomY - object.ofZoomY;
 }
 
-function zoomIn(mouse) {}
+function zoomIn(mouse) {
+    if (scaleX >= limitZoomIn || scaleY >= limitZoomIn) {
+        return;
+    }
+    clearImage();
+    ctx1.scale(deltaScale, deltaScale);
+    let scalechange = deltaScale * scaleX - scaleX;
+    scaleX *= deltaScale;
+    scaleY *= deltaScale;
+    offsetZoomX += -(mouse.x * scalechange);
+    offsetZoomY += -(mouse.y * scalechange);
+    redraw();
+}
 
-function zoomOut(mouse) {}
+function zoomOut(mouse) {
+    if (scaleX <= limitZoomOut || scaleY <= limitZoomOut) {
+        return;
+    }
+    clearImage();
+    ctx1.scale(deltaScaleReverse, deltaScaleReverse);
+    let scalechange = deltaScaleReverse * scaleX - scaleX;
+    scaleX *= deltaScaleReverse;
+    scaleY *= deltaScaleReverse;
+    offsetZoomX += -(mouse.x * scalechange);
+    offsetZoomY += -(mouse.y * scalechange);
+    redraw();
+}
 
 function pan(mouse) {
     clearImage();
@@ -270,12 +280,24 @@ function redraw() {
             //Draw the line
             ctx1.beginPath();
             ctx1.moveTo(
-                toScreenSpaceX(currDrawObject.positionX[previousPos]),
-                toScreenSpaceY(currDrawObject.positionY[previousPos])
+                toScreenSpaceX(
+                    currDrawObject.positionX[previousPos],
+                    currDrawObject
+                ),
+                toScreenSpaceY(
+                    currDrawObject.positionY[previousPos],
+                    currDrawObject
+                )
             );
             ctx1.lineTo(
-                toScreenSpaceX(currDrawObject.positionX[currPos]),
-                toScreenSpaceY(currDrawObject.positionY[currPos])
+                toScreenSpaceX(
+                    currDrawObject.positionX[currPos],
+                    currDrawObject
+                ),
+                toScreenSpaceY(
+                    currDrawObject.positionY[currPos],
+                    currDrawObject
+                )
             );
             ctx1.stroke();
         }
@@ -293,12 +315,12 @@ function drawLine(currDrawObject) {
     //Draw the line
     ctx1.beginPath();
     ctx1.moveTo(
-        toScreenSpaceX(currDrawObject.positionX[previousPos]),
-        toScreenSpaceY(currDrawObject.positionY[previousPos])
+        toScreenSpaceX(currDrawObject.positionX[previousPos], currDrawObject),
+        toScreenSpaceY(currDrawObject.positionY[previousPos], currDrawObject)
     );
     ctx1.lineTo(
-        toScreenSpaceX(currDrawObject.positionX[currPos]),
-        toScreenSpaceY(currDrawObject.positionY[currPos])
+        toScreenSpaceX(currDrawObject.positionX[currPos], currDrawObject),
+        toScreenSpaceY(currDrawObject.positionY[currPos], currDrawObject)
     );
     ctx1.stroke();
 }
